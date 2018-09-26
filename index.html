@@ -36,9 +36,14 @@
     <br />
     <h2>Valor e investir mensalmente e por quantos meses</h2>
     <div class="form-row">
-      <div class="form-group col-md-12">
+      <div class="form-group col-md-6">
         <label>Quantia</label>
         <input type="text" class="form-control" id="quantia" oninput="realizaProjecao()">
+      </div>
+
+      <div class="form-group col-md-6">
+        <label>Tempo maximo para projetar (meses)</label>
+        <input type="number" class="form-control" id="meses" oninput="realizaProjecao()">
       </div>
     </div>
     <hr />
@@ -116,128 +121,14 @@
     <div class="row">
       <div class="col-md-12">
         <div class="accordion" id="accordionExample">
-          <div class="card">
-            <div class="card-header" id="headingOne">
-              <h5 class="mb-0">
-                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
-                  aria-expanded="true" aria-controls="collapseOne">
-                  Tabela investimentos 6 meses
-                </button>
-              </h5>
-            </div>
 
-            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-              <div class="card-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">investimento</th>
-                      <th scope="col">periodo em meses</th>
-                      <th scope="col">taxa</th>
-                      <th scope="col">aliquota IR</th>
-                      <th scope="col">valor Bruto</th>
-                      <th scope="col">valor imposto de renda</th>
-                      <th scope="col">valor lucro</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-projecao-6">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="card">
-            <div class="card-header" id="headingTwo">
-              <h5 class="mb-0">
-                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo"
-                  aria-expanded="false" aria-controls="collapseTwo">
-                  Tabela investimentos 12 meses
-                </button>
-              </h5>
-            </div>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-              <div class="card-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">investimento</th>
-                      <th scope="col">periodo em meses</th>
-                      <th scope="col">taxa</th>
-                      <th scope="col">aliquota IR</th>
-                      <th scope="col">valor Bruto</th>
-                      <th scope="col">valor imposto de renda</th>
-                      <th scope="col">valor lucro</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-projecao-12">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header" id="headingThree">
-              <h5 class="mb-0">
-                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree"
-                  aria-expanded="false" aria-controls="collapseThree">
-                  Tabela investimentos 24 meses
-                </button>
-              </h5>
-            </div>
-            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-              <div class="card-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">investimento</th>
-                      <th scope="col">periodo em meses</th>
-                      <th scope="col">taxa</th>
-                      <th scope="col">aliquota IR</th>
-                      <th scope="col">valor Bruto</th>
-                      <th scope="col">valor imposto de renda</th>
-                      <th scope="col">valor lucro</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-projecao-24">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header" id="headingThree">
-              <h5 class="mb-0">
-                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour"
-                  aria-expanded="false" aria-controls="collapseFour">
-                  Tabela investimentos 30 meses
-                </button>
-              </h5>
-            </div>
-            <div id="collapseFour" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-              <div class="card-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">investimento</th>
-                      <th scope="col">periodo em meses</th>
-                      <th scope="col">taxa</th>
-                      <th scope="col">aliquota IR</th>
-                      <th scope="col">valor Bruto</th>
-                      <th scope="col">valor imposto de renda</th>
-                      <th scope="col">valor lucro</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-projecao-30">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-
+    <div class="row">
+      <div class="col-md-12">
+        <div class="accordion" id="todosJuntos">
           <div class="card">
             <div class="card-header" id="headingThree">
               <h5 class="mb-0">
@@ -247,7 +138,7 @@
                 </button>
               </h5>
             </div>
-            <div id="collapseAllTogether" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+            <div id="collapseAllTogether" class="collapse" aria-labelledby="headingThree" data-parent="#todosJuntos">
               <div class="card-body">
                 <table class="table" id="tabela-projecao">
                   <thead>
@@ -296,6 +187,7 @@
 
     function realizaProjecao() {
       const quantia = document.querySelector('#quantia').value;
+      const meses = document.querySelector('#meses').value;
 
       const ipca = document.querySelector('#ipca').value;
       const igpm = document.querySelector('#igpm').value;
@@ -356,11 +248,9 @@
       for (var investimento of opcoes) {
         while (investimento.max >= investimento.min) {
           let irMeses = 6;
-          while (irMeses <= 30) {
+          while (irMeses <= meses) {
             if (irMeses != 18) {
               const taxa = eval(investimento.taxa.replace('{{di}}', di).replace('{{taxa}}', investimento.max))
-              // console.log(taxa)
-              // console.log(investimento.taxa.replace('{{di}}', di).replace('{{taxa}}', investimento.max))
               projecao.push({
                 indice: investimento.indice.replace('{{taxa}}', investimento.max),
                 prazo: irMeses,
@@ -377,7 +267,10 @@
 
       let melhorInvestimento = "";
       let projectionType = 6;
-      while (projectionType <= 30) {
+
+      document.querySelector('#accordionExample').innerHTML = "";
+
+      while (projectionType <= meses) {
         let melhoresInvestimentosDoPeriodo = "";
         if (projectionType != 18) {
           const investimentos = []
@@ -407,9 +300,35 @@
                     </tr>
                     `
 
-          document.querySelector(`#tabela-projecao-${projectionType}`).innerHTML = "";
+          melhoresInvestimentosDoPeriodo = `
+          <div class="card">
+            <div class="card-header" id="headingOne">
+              <h5 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-tabela-${projectionType}"
+                  aria-expanded="true" aria-controls="collapse-tabela-${projectionType}">
+                  Tabela investimentos ${projectionType} meses
+                </button>
+              </h5>
+            </div>
+
+            <div id="collapse-tabela-${projectionType}" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+              <div class="card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">investimento</th>
+                      <th scope="col">periodo em meses</th>
+                      <th scope="col">taxa</th>
+                      <th scope="col">aliquota IR</th>
+                      <th scope="col">valor Bruto</th>
+                      <th scope="col">valor imposto de renda</th>
+                      <th scope="col">valor lucro</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-projecao-6">`
           for (const opcao of ordenado) {
             melhoresInvestimentosDoPeriodo += `
+            
                     <tr>
                         <td>${opcao.indice}</td>
                         <td>${opcao.prazo} meses</td>
@@ -421,7 +340,12 @@
                     </tr>
                     `
           }
-          document.querySelector(`#tabela-projecao-${projectionType}`).innerHTML = melhoresInvestimentosDoPeriodo;
+          melhoresInvestimentosDoPeriodo += `</tbody>
+                </table>
+              </div>
+            </div>
+          </div>`
+          document.querySelector(`#accordionExample`).innerHTML += melhoresInvestimentosDoPeriodo;
 
         }
         projectionType = projectionType + 6;
