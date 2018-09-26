@@ -2,222 +2,308 @@
 <html lang="en">
 
 <head>
-    <title>Hello, world!</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
-        integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <title>Hello, world!</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+    crossorigin="anonymous">
 
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
-        crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+    crossorigin="anonymous"></script>
+
+  <!--Lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js" integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps="
+    crossorigin="anonymous"></script>
 </head>
 
-<body><br>
-    <div class="container">
-        <!-- http://www.tesouro.gov.br/-/tesouro-direto-indicadores -->
-        <br />
-        <h2>Valor e investir mensalmente e por quantos meses</h2>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>Meses</label>
-                <input type="number" class="form-control" id="meses" oninput="realizaProjecao()">
-            </div>
-            <div class="form-group col-md-6">
-                <label>Quantia</label>
-                <input type="text" class="form-control" id="quantia" oninput="realizaProjecao()">
-            </div>
-        </div>
-        <hr />
-        <h2>Taxas em valores ao ano (%a.a)</h2>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>IPCA</label>
-                <input type="number" value="2.85" class="form-control" id="ipca" oninput="realizaProjecao()">
-            </div>
-            <div class="form-group col-md-6">
-                <label>IGPM</label>
-                <input type="number" value="6.68" class="form-control" id="igpm" oninput="realizaProjecao()">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>Poupança</label>
-                <input type="number" value="3.4655" class="form-control" id="poupança" oninput="realizaProjecao()">
-            </div>
-            <div class="form-group col-md-6">
-                <label>SELIC</label>
-                <input type="number" value="6.5" class="form-control" id="selic" oninput="realizaProjecao()">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>DI</label>
-                <input type="number" value="6.39" class="form-control" id="di" oninput="realizaProjecao()">
-            </div>
-        </div>
-
-        <hr />
-        <h2>Tesouro direto</h2>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>pre-fixado-2021</label>
-                <input type="number" value="9.60" class="form-control" id="pre-fixado-2021" oninput="realizaProjecao()">
-            </div>
-            <div class="form-group col-md-6">
-                <label>pre-fixado-2025</label>
-                <input type="number" value="11.80" class="form-control" id="pre-fixado-2025" oninput="realizaProjecao()">
-            </div>
-        </div>
-
-        <hr />
-        <h2>Filtros</h2>
-        <div class="form-row">
-            <div class="form-group col-md-12">
-                <input type="texte" class="form-control" id="filtro" oninput="filtraTabela()">
-            </div>
-        </div>
-
-        <br>
-        <div class="row">
-                <button type="button" class="btn btn-info" onclick="download()">Download</button>
-            <table class="table" id="tabela-projecao">
-                <thead>
-                    <tr>
-                        <th scope="col">investimento</th>
-                        <th scope="col">periodo em meses</th>
-                        <th scope="col">taxa</th>
-                        <th scope="col">aliquota IR</th>
-                        <th scope="col">valor Bruto</th>
-                        <th scope="col">valor imposto de renda</th>
-                        <th scope="col">valor lucro</th>
-                    </tr>
-                </thead>
-                <tbody id="projecao">
-                </tbody>
-            </table>
-        </div>
+<body>
+  <br>
+  <div class="container">
+    <!-- http://www.tesouro.gov.br/-/tesouro-direto-indicadores -->
+    <br />
+    <h2>Valor e investir mensalmente e por quantos meses</h2>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label>Quantia</label>
+        <input type="text" class="form-control" id="quantia" oninput="realizaProjecao()">
+      </div>
+    </div>
+    <hr />
+    <h2>Taxas em valores ao ano (%a.a)</h2>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>IPCA</label>
+        <input type="number" value="2.85" class="form-control" id="ipca" oninput="realizaProjecao()">
+      </div>
+      <div class="form-group col-md-6">
+        <label>IGPM</label>
+        <input type="number" value="6.68" class="form-control" id="igpm" oninput="realizaProjecao()">
+      </div>
     </div>
 
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Poupança</label>
+        <input type="number" value="3.4655" class="form-control" id="poupança" oninput="realizaProjecao()">
+      </div>
+      <div class="form-group col-md-6">
+        <label>SELIC</label>
+        <input type="number" value="6.5" class="form-control" id="selic" oninput="realizaProjecao()">
+      </div>
+    </div>
 
-    <script>
-        function jurosCompostos(valor, taxa, prazoEmAnos) {
-            const valorFinal = valor * (1 + taxa) ** prazoEmAnos;
-            return valorFinal.toFixed(2);
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>DI</label>
+        <input type="number" value="6.39" class="form-control" id="di" oninput="realizaProjecao()">
+      </div>
+    </div>
+
+    <hr />
+    <h2>Tesouro direto</h2>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>pre-fixado-2021</label>
+        <input type="number" value="9.60" class="form-control" id="pre-fixado-2021" oninput="realizaProjecao()">
+      </div>
+      <div class="form-group col-md-6">
+        <label>pre-fixado-2025</label>
+        <input type="number" value="11.80" class="form-control" id="pre-fixado-2025" oninput="realizaProjecao()">
+      </div>
+    </div>
+
+    <hr />
+    <h2>Filtros</h2>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <input type="texte" class="form-control" id="filtro" oninput="filtraTabela()">
+      </div>
+    </div>
+
+    <br>
+
+    
+    <div class="row">
+      <h2>Melhor investimento para cada periodo</h2>
+      <table class="table" id="tabela-melhor-investimento">
+        <thead>
+          <tr>
+            <th scope="col">investimento</th>
+            <th scope="col">periodo em meses</th>
+            <th scope="col">taxa</th>
+            <th scope="col">aliquota IR</th>
+            <th scope="col">valor Bruto</th>
+            <th scope="col">valor imposto de renda</th>
+            <th scope="col">valor lucro</th>
+          </tr>
+        </thead>
+        <tbody id="projecao-melhor-investimento">
+        </tbody>
+      </table>
+    </div>
+    <br/>
+    <div class="row">
+      <button type="button" class="btn btn-info" onclick="download()">Download</button>
+      <table class="table" id="tabela-projecao">
+        <thead>
+          <tr>
+            <th scope="col">investimento</th>
+            <th scope="col">periodo em meses</th>
+            <th scope="col">taxa</th>
+            <th scope="col">aliquota IR</th>
+            <th scope="col">valor Bruto</th>
+            <th scope="col">valor imposto de renda</th>
+            <th scope="col">valor lucro</th>
+          </tr>
+        </thead>
+        <tbody id="projecao">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <script>
+    function jurosCompostos(valor, taxa, prazoEmAnos) {
+      const valorFinal = valor * (1 + taxa) ** prazoEmAnos;
+      return valorFinal.toFixed(2);
+    }
+    function getAliquotaImpostoRenda(meses) {
+      if (meses <= 6) {
+        return 1 - 0.225
+      } else if (meses > 6 && meses <= 12) {
+        return 1 - 0.20
+
+      } else if (meses > 12 && meses <= 24) {
+        return 1 - 0.175
+
+      } else if (meses >= 24) {
+        return 1 - 0.15
+      } else {
+        throw new Error('Error on getAliquotaImpostoRenda for' + meses)
+      }
+    }
+
+    function realizaProjecao() {
+      const quantia = document.querySelector('#quantia').value;
+
+      const ipca = document.querySelector('#ipca').value;
+      const igpm = document.querySelector('#igpm').value;
+      const poupanca = document.querySelector('#poupança').value;
+      const selic = document.querySelector('#selic').value;
+      const di = document.querySelector('#di').value;
+
+      const tesouro2021 = document.querySelector('#pre-fixado-2021').value;
+      const tesouro2025 = document.querySelector('#pre-fixado-2025').value;
+
+      //TODO: adicionar validacao
+
+      let projecao = [];
+
+      //limpando projecao anterior
+      document.querySelector('#projecao').innerHTML = ""
+      document.querySelector('#projecao-melhor-investimento').innerHTML = ""
+
+
+
+      //CDB 130 - 95% do DI indo de 0.5 em 0.5 calculando pros 4 periodos de IR
+      var cdb = 130;
+
+      while (cdb >= 90.5) {
+        let irMeses = 6
+        while (irMeses <= 30) {
+          if (irMeses != 18) {
+            const taxa = (di * (cdb / 100)).toFixed(3)
+            projecao.push({
+              indice: 'cdb ' + cdb + "% do DI",
+              prazo: irMeses,
+              taxa: taxa,
+              valorBruto: jurosCompostos(quantia, taxa / 100, irMeses / 12),
+              aliquotaIR: (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3)
+            })
+          }
+          irMeses = irMeses + 6
         }
-        function getAliquotaImpostoRenda(meses) {
-            if (meses <= 6) {
-                return 1 - 0.225
-            } else if (meses > 6 && meses <= 12) {
-                return 1 - 0.20
+        cdb = cdb - 0.5
+      }
 
-            } else if (meses > 12 && meses <= 24) {
-                return 1 - 0.175
+      var cdb = 15;
 
-            } else if (meses >= 24) {
-                return 1 - 0.15
-            } else {
-                throw new Error('Error on getAliquotaImpostoRenda for' + meses)
-            }
+      while (cdb >= 9) {
+        let irMeses = 6
+        while (irMeses <= 30) {
+          if (irMeses != 18) {
+            projecao.push({
+              indice: 'cdb ' + cdb + "%",
+              prazo: irMeses,
+              taxa: cdb,
+              valorBruto: jurosCompostos(quantia, cdb / 100, irMeses / 12),
+              aliquotaIR: (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3)
+            })
+          }
+          irMeses = irMeses + 6
         }
-
-        function realizaProjecao() {
-            const meses = document.querySelector('#meses').value;
-            const quantia = document.querySelector('#quantia').value;
-
-            const ipca = document.querySelector('#ipca').value;
-            const igpm = document.querySelector('#igpm').value;
-            const poupanca = document.querySelector('#poupança').value;
-            const selic = document.querySelector('#selic').value;
-            const di = document.querySelector('#di').value;
-
-            const tesouro2021 = document.querySelector('#pre-fixado-2021').value;
-            const tesouro2025 = document.querySelector('#pre-fixado-2025').value;
-
-            //TODO: adicionar validacao
-
-            const anos = (meses / 12).toFixed(2);
-            let projecao = [];
-
-            //limpando projecao anterior
-            document.querySelector('#projecao').innerHTML = ""
+        cdb = cdb - 0.5
+      }
 
 
+      //Poupanca
+      let irMeses = 6
+      while (irMeses <= 30) {
+        if (irMeses != 18) {
+          projecao.push({
+            indice: 'poupanca',
+            prazo: irMeses,
+            taxa: poupanca,
+            valorBruto: jurosCompostos(quantia, poupanca / 100, irMeses / 12),
+            aliquotaIR: '0',
+          })
+        }
+        irMeses = irMeses + 6
+      }
 
-            //CDB 130 - 95% do DI indo de 0.5 em 0.5 calculando pros 4 periodos de IR
-            var cdb = 130;
 
-            while (cdb >= 90.5) {
-                let irMeses = 6
-                while (irMeses <= 30) {
-                    if (irMeses != 18) {
-                        const taxa = (di * (cdb / 100)).toFixed(3)
-                        projecao.push({
-                            indice: 'cdb ' + cdb + "% do DI",
-                            prazo: irMeses,
-                            taxa: taxa,
-                            valorBruto: jurosCompostos(quantia, taxa / 100, irMeses / 12),
-                            aliquotaIR: (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3)
-                        })
-                    }
-                    irMeses = irMeses + 6
-                }
-                cdb = cdb - 0.5
+      //LCI / lca 98% do DI indo de 0.5 em 0.5 calculando pros 4 periodos de IR
+      let lci_lca = 98
+      while (lci_lca >= 80) {
+        let irMeses = 6
+        while (irMeses <= 30) {
+          if (irMeses != 18) {
+            const taxa = (di * (lci_lca / 100)).toFixed(3)
+            projecao.push({
+              indice: 'lci_lca ' + lci_lca + "% do DI",
+              prazo: irMeses,
+              taxa: taxa,
+              valorBruto: jurosCompostos(quantia, taxa / 100, irMeses / 12),
+              aliquotaIR: '0'
+            })
+          }
+          irMeses = irMeses + 6
+        }
+        lci_lca = lci_lca - 0.5
+      }
+
+
+
+
+
+      let melhorInvestimento = "";
+      let projectionType = 6;
+      while (projectionType <= 30) {
+        if (projectionType != 18) {
+          const investimentos = []
+
+          //filtrando investimentos para aquele periodo
+          for (const item of projecao) {
+            if (item.prazo == projectionType) {
+              investimentos.push(item)
             }
-
-            var cdb = 15;
-
-            while (cdb >= 9) {
-                let irMeses = 6
-                while (irMeses <= 30) {
-                    if (irMeses != 18) {
-                        projecao.push({
-                            indice: 'cdb ' + cdb + "%",
-                            prazo: irMeses,
-                            taxa: cdb,
-                            valorBruto: jurosCompostos(quantia, cdb / 100, irMeses / 12),
-                            aliquotaIR: (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3)
-                        })
-                    }
-                    irMeses = irMeses + 6
-                }
-                cdb = cdb - 0.5
-            }
+          }
 
 
-            //Poupanca
-            let irMeses = 6
-            while (irMeses <= 30) {
-                if (irMeses != 18) {
-                    projecao.push({
-                        indice: 'poupanca',
-                        prazo: irMeses,
-                        taxa: poupanca,
-                        valorBruto: jurosCompostos(quantia, poupanca / 100, irMeses / 12),
-                        aliquotaIR: '0',
-                    })
-                }
-                irMeses = irMeses + 6
-            }
+          const ordenado = _.sortBy(investimentos, [function (o) {
+            return o.valorBruto * (1 - o.aliquotaIR)
+          }])
+
+          const item = _.last(ordenado)
+          melhorInvestimento += `
+                    <tr>
+                        <td>${item.indice}</td>
+                        <td>${item.prazo} meses</td>
+                        <td>${item.taxa}</td>
+                        <td>${item.aliquotaIR}</td>
+                        <td>${item.valorBruto}</td>
+                        <td>${(item.valorBruto * item.aliquotaIR).toFixed(2)}</td>
+                        <td>${(item.valorBruto * (1 - item.aliquotaIR)).toFixed(2)}</td>
+                    </tr>
+                    `
+
+
+        }
+        projectionType = projectionType + 6;
+      }
+      document.querySelector('#projecao-melhor-investimento').innerHTML = melhorInvestimento;
 
 
 
-            //Filling the grid with information
+      //Filling the grid with information
 
-            let html = "";
-            for (const item of projecao) {
-                html += `
+      let html = "";
+      const ordenadoPreco = _.sortBy(projecao, [function (o) {
+        return o.valorBruto * (1 - o.aliquotaIR)
+      }])
+      for (const item of ordenadoPreco) {
+        html += `
                 <tr>
                     <td>${item.indice}</td>
                     <td>${item.prazo} meses</td>
@@ -228,34 +314,34 @@
                     <td>${(item.valorBruto * (1 - item.aliquotaIR)).toFixed(2)}</td>
                 </tr>
                 `
-            }
-            document.querySelector('#projecao').innerHTML = html
+      }
+      document.querySelector('#projecao').innerHTML = html
+    }
+
+    function filtraTabela() {
+      var filtro, table, tr, content
+      filtro = document.querySelector('#filtro').value
+      table = document.querySelector('#tabela-projecao >tbody');
+      tr = table.getElementsByTagName('tr');
+
+      for (var i = 0; i < tr.length; i++) {
+        content = tr[i].innerHTML;
+
+        if (content.indexOf(filtro) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
         }
 
-        function filtraTabela() {
-            var filtro, table, tr, content
-            filtro = document.querySelector('#filtro').value
-            table = document.querySelector('#tabela-projecao >tbody');
-            tr = table.getElementsByTagName('tr');
+      }
 
-            for (var i = 0; i < tr.length; i++) {
-                content = tr[i].innerHTML;
-
-                if (content.indexOf(filtro) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
-
-            }
-
-        }
-        function download() {
-            var htmltable = document.getElementById('tabela-projecao');
-            var html = htmltable.outerHTML;
-            window.open('data:application/vnd.ms-excel,' + encodeURIComponent(html));
-        }
-    </script>
+    }
+    function download() {
+      var htmltable = document.getElementById('tabela-projecao');
+      var html = htmltable.outerHTML;
+      window.open('data:application/vnd.ms-excel,' + encodeURIComponent(html));
+    }
+  </script>
 </body>
 
 </html>
