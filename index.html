@@ -29,7 +29,10 @@
 <body>
   <br>
   <div class="container">
-    <!-- http://www.tesouro.gov.br/-/tesouro-direto-indicadores -->
+    <!-- 
+      http://www.tesouro.gov.br/-/tesouro-direto-indicadores 
+      http://www.b3.com.br/pt_br/
+    -->
     <br />
     <h2>Valor e investir mensalmente e por quantos meses</h2>
     <div class="form-row">
@@ -83,9 +86,9 @@
     </div>
 
 
-    <br/>
+    <br />
 
-    
+
     <div class="row">
       <h2>Melhor investimento para cada periodo</h2>
       <table class="table" id="tabela-melhor-investimento">
@@ -104,7 +107,7 @@
         </tbody>
       </table>
     </div>
-    <br/>
+    <br />
     <div class="row">
       <button type="button" class="btn btn-info" onclick="download()">Download</button>
       <table class="table" id="tabela-projecao">
@@ -167,88 +170,66 @@
       document.querySelector('#projecao').innerHTML = ""
       document.querySelector('#projecao-melhor-investimento').innerHTML = ""
 
+      var opcoes = [
+        {
+          indice: "cdb {{taxa}}% do DI",
+          max: 130,
+          min: 90.5,
+          taxa: "({{di}} * ({{taxa}} / 100))",
+          ir: true
+        },
+        {
+          indice: "cdb {{taxa}}%",
+          max: 15,
+          min: 9,
+          taxa: "{{taxa}}",
+          ir: true
+        },
+        {
+          indice: "lci_lca {{taxa}}% DI",
+          max: 98,
+          min: 80,
+          taxa: "({{di}} * ({{taxa}} / 100))",
+          ir: false
+        },
+        {
+          indice: "poupanca",
+          max: 0,
+          min: 0,
+          taxa: poupanca,
+          ir: false
+        },
+        {
+          indice: "tesouro selic",
+          max: 0,
+          min: 0,
+          taxa: selic,
+          ir: true
+        }
 
+      ]
 
-      //CDB 130 - 95% do DI indo de 0.5 em 0.5 calculando pros 4 periodos de IR
-      var cdb = 130;
-
-      while (cdb >= 90.5) {
-        let irMeses = 6
-        while (irMeses <= 30) {
-          if (irMeses != 18) {
-            const taxa = (di * (cdb / 100)).toFixed(3)
-            projecao.push({
-              indice: 'cdb ' + cdb + "% do DI",
-              prazo: irMeses,
-              taxa: taxa,
-              valorBruto: jurosCompostos(quantia, taxa / 100, irMeses / 12),
-              aliquotaIR: (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3)
-            })
+      for (var investimento of opcoes) {
+        while (investimento.max >= investimento.min) {
+          let irMeses = 6;
+          while (irMeses <= 30) {
+            if (irMeses != 18) {
+              const taxa = eval(investimento.taxa.replace('{{di}}', di).replace('{{taxa}}', investimento.max))
+              // console.log(taxa)
+              // console.log(investimento.taxa.replace('{{di}}', di).replace('{{taxa}}', investimento.max))
+              projecao.push({
+                indice: investimento.indice.replace('{{taxa}}', investimento.max),
+                prazo: irMeses,
+                taxa: parseFloat(taxa).toFixed(3),
+                valorBruto: jurosCompostos(quantia, taxa.toFixed(3) / 100, irMeses / 12),
+                aliquotaIR: investimento.ir ? (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3) : "0"
+              })
+            }
+            irMeses = irMeses + 6;
           }
-          irMeses = irMeses + 6
+          investimento.max = investimento.max - 0.5
         }
-        cdb = cdb - 0.5
       }
-
-      var cdb = 15;
-
-      while (cdb >= 9) {
-        let irMeses = 6
-        while (irMeses <= 30) {
-          if (irMeses != 18) {
-            projecao.push({
-              indice: 'cdb ' + cdb + "%",
-              prazo: irMeses,
-              taxa: cdb,
-              valorBruto: jurosCompostos(quantia, cdb / 100, irMeses / 12),
-              aliquotaIR: (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3)
-            })
-          }
-          irMeses = irMeses + 6
-        }
-        cdb = cdb - 0.5
-      }
-
-
-      //Poupanca
-      let irMeses = 6
-      while (irMeses <= 30) {
-        if (irMeses != 18) {
-          projecao.push({
-            indice: 'poupanca',
-            prazo: irMeses,
-            taxa: poupanca,
-            valorBruto: jurosCompostos(quantia, poupanca / 100, irMeses / 12),
-            aliquotaIR: '0',
-          })
-        }
-        irMeses = irMeses + 6
-      }
-
-
-      //LCI / lca 98% do DI indo de 0.5 em 0.5 calculando pros 4 periodos de IR
-      let lci_lca = 98
-      while (lci_lca >= 80) {
-        let irMeses = 6
-        while (irMeses <= 30) {
-          if (irMeses != 18) {
-            const taxa = (di * (lci_lca / 100)).toFixed(3)
-            projecao.push({
-              indice: 'lci_lca ' + lci_lca + "% do DI",
-              prazo: irMeses,
-              taxa: taxa,
-              valorBruto: jurosCompostos(quantia, taxa / 100, irMeses / 12),
-              aliquotaIR: '0'
-            })
-          }
-          irMeses = irMeses + 6
-        }
-        lci_lca = lci_lca - 0.5
-      }
-
-
-
-
 
       let melhorInvestimento = "";
       let projectionType = 6;
