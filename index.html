@@ -82,15 +82,8 @@
       </div>
     </div>
 
-    <hr />
-    <h2>Filtros</h2>
-    <div class="form-row">
-      <div class="form-group col-md-12">
-        <input type="texte" class="form-control" id="filtro" oninput="filtraTabela()">
-      </div>
-    </div>
 
-    <br>
+    <br/>
 
     
     <div class="row">
@@ -318,24 +311,6 @@
       document.querySelector('#projecao').innerHTML = html
     }
 
-    function filtraTabela() {
-      var filtro, table, tr, content
-      filtro = document.querySelector('#filtro').value
-      table = document.querySelector('#tabela-projecao >tbody');
-      tr = table.getElementsByTagName('tr');
-
-      for (var i = 0; i < tr.length; i++) {
-        content = tr[i].innerHTML;
-
-        if (content.indexOf(filtro) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-
-      }
-
-    }
     function download() {
       var htmltable = document.getElementById('tabela-projecao');
       var html = htmltable.outerHTML;
