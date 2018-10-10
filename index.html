@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Hello, world!</title>
+  <title>Calculadora</title>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,6 +12,11 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
     crossorigin="anonymous">
 
+  <!-- loda D3.js-->
+  <script src="https://d3js.org/d3.v5.js"></script>
+  <!-- Load billboard.js with style -->
+  <script src="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.css">
 
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -36,12 +41,12 @@
     <br />
     <h2>Valor e investir mensalmente e por quantos meses</h2>
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>Quantia</label>
-        <input type="text" class="form-control" id="quantia" oninput="realizaProjecao()">
+        <input type="text" class="form-control" id="quantia" value="1000" oninput="realizaProjecao()">
       </div>
 
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>Tempo maximo para projetar (meses)</label>
         <input type="number" class="form-control" id="meses" oninput="realizaProjecao()">
       </div>
@@ -49,29 +54,29 @@
     <hr />
     <h2>Taxas em valores ao ano (%a.a)</h2>
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>IPCA</label>
         <input type="number" value="2.85" class="form-control" id="ipca" oninput="realizaProjecao()">
       </div>
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>IGPM</label>
         <input type="number" value="6.68" class="form-control" id="igpm" oninput="realizaProjecao()">
       </div>
     </div>
 
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>Poupança</label>
         <input type="number" value="3.4655" class="form-control" id="poupança" oninput="realizaProjecao()">
       </div>
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>SELIC</label>
         <input type="number" value="6.5" class="form-control" id="selic" oninput="realizaProjecao()">
       </div>
     </div>
 
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>DI</label>
         <input type="number" value="6.39" class="form-control" id="di" oninput="realizaProjecao()">
       </div>
@@ -80,11 +85,11 @@
     <hr />
     <h2>Tesouro direto</h2>
     <div class="form-row">
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>pre-fixado-2021</label>
         <input type="number" value="9.60" class="form-control" id="pre-fixado-2021" oninput="realizaProjecao()">
       </div>
-      <div class="form-group col-md-6">
+      <div class="form-group col-xl-6">
         <label>pre-fixado-2025</label>
         <input type="number" value="11.80" class="form-control" id="pre-fixado-2025" oninput="realizaProjecao()">
       </div>
@@ -112,6 +117,17 @@
         </tbody>
       </table>
     </div>
+
+    <div class="row">
+      <div class="col-xl-12">
+        <hr />
+        <h2>graficos</h2>
+        <div id="graficos">
+
+        </div>
+      </div>
+    </div>
+
     <br />
     <div class="row">
       <button type="button" class="btn btn-info" onclick="download()">Download</button> <br />
@@ -119,7 +135,7 @@
     </div>
 
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-xl-12">
         <div class="accordion" id="accordionExample">
 
         </div>
@@ -127,7 +143,7 @@
     </div>
 
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-xl-12">
         <div class="accordion" id="todosJuntos">
           <div class="card">
             <div class="card-header" id="headingThree">
@@ -205,7 +221,8 @@
       //limpando projecao anterior
       document.querySelector('#projecao').innerHTML = ""
       document.querySelector('#projecao-melhor-investimento').innerHTML = ""
-
+      document.querySelector('#graficos').innerHTML = "";
+      let graficos = []
       var opcoes = [
         {
           indice: "cdb {{taxa}}% do DI",
@@ -223,9 +240,23 @@
         },
         {
           indice: "lci_lca {{taxa}}% DI",
-          max: 98,
+          max: 100,
           min: 80,
           taxa: "({{di}} * ({{taxa}} / 100))",
+          ir: false
+        },
+        {
+          indice: "lci_lca {{taxa}}%",
+          max: 9,
+          min: 4,
+          taxa: "{{taxa}}",
+          ir: false
+        },
+        {
+          indice: "lci_lca IPCA + {{taxa}}%",
+          max: 9,
+          min: 4,
+          taxa: "{{ipca}} + {{taxa}}",
           ir: false
         },
         {
@@ -250,7 +281,11 @@
           let irMeses = 6;
           while (irMeses <= meses) {
             if (irMeses != 18) {
-              const taxa = eval(investimento.taxa.replace('{{di}}', di).replace('{{taxa}}', investimento.max))
+              const taxa = eval(
+                investimento.taxa
+                  .replace('{{di}}', di)
+                  .replace('{{ipca}}', ipca)
+                  .replace('{{taxa}}', investimento.max))
               projecao.push({
                 indice: investimento.indice.replace('{{taxa}}', investimento.max),
                 prazo: irMeses,
@@ -271,6 +306,7 @@
       document.querySelector('#accordionExample').innerHTML = "";
 
       while (projectionType <= meses) {
+        document.querySelector('#graficos').innerHTML += `<div id="meses_${projectionType}" ></div>`;
         let melhoresInvestimentosDoPeriodo = "";
         if (projectionType != 18) {
           const investimentos = []
@@ -311,40 +347,57 @@
               </h5>
             </div>
 
-            <div id="collapse-tabela-${projectionType}" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-              <div class="card-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">investimento</th>
-                      <th scope="col">periodo em meses</th>
-                      <th scope="col">taxa</th>
-                      <th scope="col">aliquota IR</th>
-                      <th scope="col">valor Bruto</th>
-                      <th scope="col">valor imposto de renda</th>
-                      <th scope="col">valor lucro</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tabela-projecao-6">`
+  <div id="collapse-tabela-${projectionType}" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">investimento</th>
+            <th scope="col">periodo em meses</th>
+            <th scope="col">taxa</th>
+            <th scope="col">aliquota IR</th>
+            <th scope="col">valor Bruto</th>
+            <th scope="col">valor imposto de renda</th>
+            <th scope="col">valor lucro</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-projecao-6">`
+
+          let graphData = []
           for (const opcao of ordenado) {
+            graphData.push([
+              opcao.indice, (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
+            ])
             melhoresInvestimentosDoPeriodo += `
-            
-                    <tr>
-                        <td>${opcao.indice}</td>
-                        <td>${opcao.prazo} meses</td>
-                        <td>${opcao.taxa}</td>
-                        <td>${opcao.aliquotaIR}</td>
-                        <td>${opcao.valorBruto}</td>
-                        <td>${(opcao.valorBruto * opcao.aliquotaIR).toFixed(2)}</td>
-                        <td>${(opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)}</td>
-                    </tr>
-                    `
+
+          <tr>
+            <td>${opcao.indice}</td>
+            <td>${opcao.prazo} meses</td>
+            <td>${opcao.taxa}</td>
+            <td>${opcao.aliquotaIR}</td>
+            <td>${opcao.valorBruto}</td>
+            <td>${(opcao.valorBruto * opcao.aliquotaIR).toFixed(2)}</td>
+            <td>${(opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)}</td>
+          </tr>
+          `
           }
-          melhoresInvestimentosDoPeriodo += `</tbody>
-                </table>
-              </div>
-            </div>
-          </div>`
+
+
+          melhoresInvestimentosDoPeriodo += `</tbody></table></div></div></div>`
+          graficos.push(
+            {
+              data: {
+                columns: graphData,
+                type: "bar",
+              },
+              axis: {
+                x: {
+                  show: false
+                }
+              },
+              bindto: `#meses_${projectionType}`,
+            })
+
           document.querySelector(`#accordionExample`).innerHTML += melhoresInvestimentosDoPeriodo;
 
         }
@@ -362,18 +415,22 @@
       }])
       for (const item of ordenadoPreco) {
         html += `
-                <tr>
-                    <td>${item.indice}</td>
-                    <td>${item.prazo} meses</td>
-                    <td>${item.taxa}</td>
-                    <td>${item.aliquotaIR}</td>
-                    <td>${item.valorBruto}</td>
-                    <td>${(item.valorBruto * item.aliquotaIR).toFixed(2)}</td>
-                    <td>${(item.valorBruto * (1 - item.aliquotaIR)).toFixed(2)}</td>
-                </tr>
-                `
+  <tr>
+    <td>${item.indice}</td>
+    <td>${item.prazo} meses</td>
+    <td>${item.taxa}</td>
+    <td>${item.aliquotaIR}</td>
+    <td>${item.valorBruto}</td>
+    <td>${(item.valorBruto * item.aliquotaIR).toFixed(2)}</td>
+    <td>${(item.valorBruto * (1 - item.aliquotaIR)).toFixed(2)}</td>
+  </tr>
+  `
       }
       document.querySelector('#projecao').innerHTML = html
+
+      for (const x of graficos) {
+        bb.generate(x).legend.hide();
+      }
     }
 
     function download() {
