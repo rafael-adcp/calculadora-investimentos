@@ -29,6 +29,14 @@
   <!--Lodash -->
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js" integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps="
     crossorigin="anonymous"></script>
+  <style>
+    .bb-ygrid-line.rafael line {
+    stroke: #DC3445;
+}
+.bb-ygrid-line.rafael text {
+    fill: #DC3445;
+}
+    </style>
 </head>
 
 <body>
@@ -39,7 +47,7 @@
       http://www.b3.com.br/pt_br/
     -->
     <br />
-    <h2>Valor e investir mensalmente e por quantos meses</h2>
+    <h2>Aporte único a ser feito e por quantos meses calcular</h2>
     <div class="form-row">
       <div class="form-group col-xl-6">
         <label>Quantia</label>
@@ -80,6 +88,11 @@
         <label>DI</label>
         <input type="number" value="6.39" class="form-control" id="di" oninput="realizaProjecao()">
       </div>
+
+      <div class="form-group col-xl-6">
+          <label>Inflação</label>
+          <input type="number" value="6.5" class="form-control" id="inflacao" oninput="realizaProjecao()">
+        </div>
     </div>
 
     <hr />
@@ -210,6 +223,7 @@
       const poupanca = document.querySelector('#poupança').value;
       const selic = document.querySelector('#selic').value;
       const di = document.querySelector('#di').value;
+      const inflacao = document.querySelector('#inflacao').value;
 
       const tesouro2021 = document.querySelector('#pre-fixado-2021').value;
       const tesouro2025 = document.querySelector('#pre-fixado-2025').value;
@@ -306,7 +320,7 @@
       document.querySelector('#accordionExample').innerHTML = "";
 
       while (projectionType <= meses) {
-        document.querySelector('#graficos').innerHTML += `<div id="meses_${projectionType}" ></div>`;
+        document.querySelector('#graficos').innerHTML += `<hr/><div id="meses_${projectionType}" ></div>`;
         let melhoresInvestimentosDoPeriodo = "";
         if (projectionType != 18) {
           const investimentos = []
@@ -364,10 +378,47 @@
         <tbody id="tabela-projecao-6">`
 
           let graphData = []
+          let cdbDI = ["cdb %DI"]
+          let cdbFixo = ["cdb %"]
+          let lciDI = ["lci_lca %DI"]
+
+          let lciFixo = ["lci_lca %"]
+          let lciIPCA = ["lci_lca ipca + %"]
+
+          //valores que sao unicos serao plotados como linhas de grid em Y
+          let poupancaGrafico = 0;
+          let tesouroselicGrafico = 0;
           for (const opcao of ordenado) {
             graphData.push([
               opcao.indice, (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
             ])
+
+            if (opcao.indice.indexOf('cdb') != -1 &&
+              opcao.indice.indexOf('DI') != -1) {
+              cdbDI.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+
+            } else if (opcao.indice.indexOf('cdb') != -1) {
+              cdbFixo.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+
+            } else if (opcao.indice.indexOf('lci_lca') != -1 &&
+              opcao.indice.indexOf('DI') != -1) {
+              lciDI.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+
+            } else if (opcao.indice.indexOf('lci_lca') != -1 &&
+              opcao.indice.indexOf('IPCA') != -1) {
+              lciIPCA.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+
+            } else if (opcao.indice.indexOf('lci_lca') != -1) {
+              lciFixo.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+
+            } else if (opcao.indice.indexOf('poupanca') != -1) {
+              poupancaGrafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
+
+            } else if (opcao.indice.indexOf('selic') != -1) {
+              tesouroselicGrafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
+
+            }
+
             melhoresInvestimentosDoPeriodo += `
 
           <tr>
@@ -384,11 +435,50 @@
 
 
           melhoresInvestimentosDoPeriodo += `</tbody></table></div></div></div>`
+          let valorInflacao = jurosCompostos(quantia, inflacao / 100, projectionType / 12)
+
           graficos.push(
             {
               data: {
-                columns: graphData,
-                type: "bar",
+                columns: [
+                  cdbDI,
+                  cdbFixo,
+
+                  lciDI,
+                  lciFixo,
+                  lciIPCA,
+                ],
+              },
+              grid: {
+                y: {
+                  lines: [
+                    {
+                      value: poupancaGrafico,
+                      text: "Poupança: " + poupancaGrafico
+                    },
+                    {
+                      value: tesouroselicGrafico,
+                      text: "Tesouro Selic: " + tesouroselicGrafico,
+                    },
+
+                    {
+                      value: valorInflacao,
+                      text: "Inflação: " + valorInflacao,
+                      class: 'rafael'
+                    },
+                  ]
+                }
+              },
+              title: {
+                text: `Total de rendimentos de um único aporte de R$ ${quantia} investido por ${projectionType} meses`,
+              },
+              tooltip: {
+                order: "desc",
+                format: {
+                  title: function () {
+                    return 'Rendimento liquido';
+                  },
+                },
               },
               axis: {
                 x: {
@@ -428,8 +518,9 @@
       }
       document.querySelector('#projecao').innerHTML = html
 
+      //desenhando todos os graficos
       for (const x of graficos) {
-        bb.generate(x).legend.hide();
+        bb.generate(x)
       }
     }
 
