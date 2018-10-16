@@ -318,8 +318,8 @@
               projecao.push({
                 indice: investimento.indice.replace('{{taxa}}', investimento.max),
                 prazo: irMeses,
-                taxa: parseFloat(taxa).toFixed(3),
-                valorBruto: jurosCompostos(quantia, taxa.toFixed(3) / 100, irMeses / 12),
+                taxa:  investimento.indice.indexOf('tesouro 20') != -1 ? "" : parseFloat(taxa).toFixed(3),
+                valorBruto: investimento.indice.indexOf('tesouro 20') != -1 ? taxa : jurosCompostos(quantia, taxa.toFixed(3) / 100, irMeses / 12),
                 aliquotaIR: investimento.ir ? (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3) : "0"
               })
             }
