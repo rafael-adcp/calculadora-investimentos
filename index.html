@@ -100,11 +100,11 @@
     <div class="form-row">
       <div class="form-group col-xl-6">
         <label>pre-fixado-2021</label>
-        <input type="number" value="9.60" class="form-control" id="pre-fixado-2021" oninput="realizaProjecao()">
+        <input type="number" value="838.09" class="form-control" id="pre-fixado-2021" oninput="realizaProjecao()">
       </div>
       <div class="form-group col-xl-6">
         <label>pre-fixado-2025</label>
-        <input type="number" value="11.80" class="form-control" id="pre-fixado-2025" oninput="realizaProjecao()">
+        <input type="number" value="552.14" class="form-control" id="pre-fixado-2025" oninput="realizaProjecao()">
       </div>
     </div>
 
@@ -286,8 +286,22 @@
           min: 0,
           taxa: selic,
           ir: true
+        },
+        {
+          indice: "tesouro 2021",
+          max: 0,
+          min: 0,
+          taxa: "parseFloat((quantia/tesouro2021) * 1000).toFixed(2)",
+          ir: true
+        },
+        {
+          indice: "tesouro 2025",
+          max: 0,
+          min: 0,
+          taxa: "parseFloat((quantia/tesouro2025) * 1000).toFixed(2)",
+          ir: true
         }
-
+        
       ]
 
       for (var investimento of opcoes) {
@@ -300,6 +314,7 @@
                   .replace('{{di}}', di)
                   .replace('{{ipca}}', ipca)
                   .replace('{{taxa}}', investimento.max))
+              
               projecao.push({
                 indice: investimento.indice.replace('{{taxa}}', investimento.max),
                 prazo: irMeses,
@@ -385,6 +400,9 @@
           let lciFixo = ["lci_lca %"]
           let lciIPCA = ["lci_lca ipca + %"]
 
+          let tesouro2021Grafico = 0;
+          let tesouro2025Grafico = 0;
+
           //valores que sao unicos serao plotados como linhas de grid em Y
           let poupancaGrafico = 0;
           let tesouroselicGrafico = 0;
@@ -416,7 +434,10 @@
 
             } else if (opcao.indice.indexOf('selic') != -1) {
               tesouroselicGrafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
-
+            } else if (opcao.indice.indexOf('tesouro 2021') != -1) {
+              tesouro2021Grafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
+            } else if (opcao.indice.indexOf('tesouro 2025') != -1) {
+              tesouro2025Grafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
             }
 
             melhoresInvestimentosDoPeriodo += `
@@ -459,6 +480,15 @@
                     {
                       value: tesouroselicGrafico,
                       text: "Tesouro Selic: " + tesouroselicGrafico,
+                    },
+
+                    {
+                      value: tesouro2021Grafico,
+                      text: "Tesouro 2021: " + tesouro2021Grafico,
+                    },
+                    {
+                      value: tesouro2025Grafico,
+                      text: "Tesouro 2025: " + tesouro2025Grafico,
                     },
 
                     {
