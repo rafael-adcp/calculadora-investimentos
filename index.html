@@ -29,11 +29,14 @@
   <!--Lodash -->
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js" integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps="
     crossorigin="anonymous"></script>
+
+  <!-- Moment Js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
   <style>
-    .bb-ygrid-line.rafael line {
+    .bb-ygrid-line.vermelho line {
     stroke: #DC3445;
 }
-.bb-ygrid-line.rafael text {
+.bb-ygrid-line.vermelho text {
     fill: #DC3445;
 }
     </style>
@@ -90,9 +93,9 @@
       </div>
 
       <div class="form-group col-xl-6">
-          <label>Inflação</label>
-          <input type="number" value="6.5" class="form-control" id="inflacao" oninput="realizaProjecao()">
-        </div>
+        <label>Inflação</label>
+        <input type="number" value="6.5" class="form-control" id="inflacao" oninput="realizaProjecao()">
+      </div>
     </div>
 
     <hr />
@@ -281,10 +284,10 @@
           ir: false
         },
         {
-          indice: "tesouro selic",
+          indice: "tesouro selic + 0.01",
           max: 0,
           min: 0,
-          taxa: selic,
+          taxa: '{{selic}} + 0.01',
           ir: true
         },
         {
@@ -292,16 +295,30 @@
           max: 0,
           min: 0,
           taxa: "parseFloat((quantia/tesouro2021) * 1000).toFixed(2)",
-          ir: true
+          ir: false
         },
         {
           indice: "tesouro 2025",
           max: 0,
           min: 0,
           taxa: "parseFloat((quantia/tesouro2025) * 1000).toFixed(2)",
+          ir: false
+        },
+        {
+          indice: "tesouro IPCA + {{taxa}}%",
+          max: 9,
+          min: 4,
+          taxa: "{{ipca}} + {{taxa}}",
+          ir: true
+        },
+        {
+          indice: "tesouro semestral {{taxa}}%",
+          max: 11,
+          min: 4,
+          taxa: "{{taxa}}",
           ir: true
         }
-        
+
       ]
 
       for (var investimento of opcoes) {
@@ -309,19 +326,32 @@
           let irMeses = 6;
           while (irMeses <= meses) {
             if (irMeses != 18) {
-              const taxa = eval(
-                investimento.taxa
-                  .replace('{{di}}', di)
-                  .replace('{{ipca}}', ipca)
-                  .replace('{{taxa}}', investimento.max))
-              
-              projecao.push({
-                indice: investimento.indice.replace('{{taxa}}', investimento.max),
-                prazo: irMeses,
-                taxa:  investimento.indice.indexOf('tesouro 20') != -1 ? "" : parseFloat(taxa).toFixed(3),
-                valorBruto: investimento.indice.indexOf('tesouro 20') != -1 ? taxa : jurosCompostos(quantia, taxa.toFixed(3) / 100, irMeses / 12),
-                aliquotaIR: investimento.ir ? (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3) : "0"
-              })
+              //se nao for tesouro direto prefixado 20.... OU
+              //se for tesouro direto prefixado e a soma dos meses na data de hoje bater ele coloca
+              if (investimento.indice.indexOf('tesouro 20') == -1 ||
+                (investimento.indice.indexOf('tesouro 20') != -1 && investimento.indice.indexOf(moment().add(irMeses, "months").year()) != -1)) {
+                let obj = {}
+                const taxa = eval(
+                  investimento.taxa
+                    .replace('{{di}}', di)
+                    .replace('{{ipca}}', ipca)
+                    .replace('{{selic}}', selic)
+                    .replace('{{taxa}}', investimento.max))
+
+                obj.indice = investimento.indice.replace('{{taxa}}', investimento.max);
+                obj.prazo = irMeses;
+                obj.taxa = investimento.indice.indexOf('tesouro 20') != -1 ? "" : parseFloat(taxa).toFixed(3);
+                obj.valorBruto = investimento.indice.indexOf('tesouro 20') != -1 ? taxa : jurosCompostos(quantia, taxa.toFixed(3) / 100, irMeses / 12);
+                obj.aliquotaIR = investimento.ir ? (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3) : "0";
+
+                obj.valorIR = (obj.valorBruto * obj.aliquotaIR).toFixed(2)
+                obj.valorLiquido = obj.valorBruto * (1 - obj.aliquotaIR);
+
+                if (typeof obj.valorLiquido != "number") {
+                  throw new Error('Formato errado, deveria ser numero')
+                }
+                projecao.push(obj)
+              }
             }
             irMeses = irMeses + 6;
           }
@@ -349,22 +379,13 @@
 
 
           const ordenado = _.sortBy(investimentos, [function (o) {
-            return o.valorBruto * (1 - o.aliquotaIR)
+            return o.valorLiquido
           }])
 
           const item = _.last(ordenado)
-          melhorInvestimento += `
-                    <tr>
-                        <td>${item.indice}</td>
-                        <td>${item.prazo} meses</td>
-                        <td>${item.taxa}</td>
-                        <td>${item.aliquotaIR}</td>
-                        <td>${item.valorBruto}</td>
-                        <td>${(item.valorBruto * item.aliquotaIR).toFixed(2)}</td>
-                        <td>${(item.valorBruto * (1 - item.aliquotaIR)).toFixed(2)}</td>
-                    </tr>
-                    `
 
+
+          melhorInvestimento += preencheLinha(item, jurosCompostos(quantia, inflacao / 100, projectionType / 12))
           melhoresInvestimentosDoPeriodo = `
           <div class="card">
             <div class="card-header" id="headingOne">
@@ -392,7 +413,6 @@
         </thead>
         <tbody id="tabela-projecao-6">`
 
-          let graphData = []
           let cdbDI = ["cdb %DI"]
           let cdbFixo = ["cdb %"]
           let lciDI = ["lci_lca %DI"]
@@ -403,55 +423,54 @@
           let tesouro2021Grafico = 0;
           let tesouro2025Grafico = 0;
 
+          let tesouroIPCA = ["tesouro ipca + %"]
+          let tesouroSemestral = ["tesouro semestral %"]
+
           //valores que sao unicos serao plotados como linhas de grid em Y
           let poupancaGrafico = 0;
           let tesouroselicGrafico = 0;
           for (const opcao of ordenado) {
-            graphData.push([
-              opcao.indice, (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
-            ])
+            const valorArredondado = opcao.valorLiquido.toFixed(2)
 
             if (opcao.indice.indexOf('cdb') != -1 &&
               opcao.indice.indexOf('DI') != -1) {
-              cdbDI.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+              cdbDI.push(valorArredondado)
 
             } else if (opcao.indice.indexOf('cdb') != -1) {
-              cdbFixo.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+              cdbFixo.push(valorArredondado)
 
             } else if (opcao.indice.indexOf('lci_lca') != -1 &&
               opcao.indice.indexOf('DI') != -1) {
-              lciDI.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+              lciDI.push(valorArredondado)
 
             } else if (opcao.indice.indexOf('lci_lca') != -1 &&
               opcao.indice.indexOf('IPCA') != -1) {
-              lciIPCA.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
+              lciIPCA.push(valorArredondado)
 
             } else if (opcao.indice.indexOf('lci_lca') != -1) {
-              lciFixo.push((opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2))
-
-            } else if (opcao.indice.indexOf('poupanca') != -1) {
-              poupancaGrafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
-
-            } else if (opcao.indice.indexOf('selic') != -1) {
-              tesouroselicGrafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
-            } else if (opcao.indice.indexOf('tesouro 2021') != -1) {
-              tesouro2021Grafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
-            } else if (opcao.indice.indexOf('tesouro 2025') != -1) {
-              tesouro2025Grafico = (opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)
+              lciFixo.push(valorArredondado)
             }
 
-            melhoresInvestimentosDoPeriodo += `
+            else if (opcao.indice.indexOf("tesouro IPCA") != -1) {
+              tesouroIPCA.push(valorArredondado);
+            }
 
-          <tr>
-            <td>${opcao.indice}</td>
-            <td>${opcao.prazo} meses</td>
-            <td>${opcao.taxa}</td>
-            <td>${opcao.aliquotaIR}</td>
-            <td>${opcao.valorBruto}</td>
-            <td>${(opcao.valorBruto * opcao.aliquotaIR).toFixed(2)}</td>
-            <td>${(opcao.valorBruto * (1 - opcao.aliquotaIR)).toFixed(2)}</td>
-          </tr>
-          `
+            else if (opcao.indice.indexOf("tesouro semestral") != -1) {
+              tesouroSemestral.push(valorArredondado);
+            }
+            //valores calculados apenas uma vez \/
+            else if (opcao.indice.indexOf('poupanca') != -1) {
+              poupancaGrafico = valorArredondado
+
+            } else if (opcao.indice.indexOf('tesouro selic') != -1) {
+              tesouroselicGrafico = valorArredondado
+            } else if (opcao.indice.indexOf('tesouro 2021') != -1) {
+              tesouro2021Grafico = valorArredondado
+            } else if (opcao.indice.indexOf('tesouro 2025') != -1) {
+              tesouro2025Grafico = valorArredondado
+            }
+
+            melhoresInvestimentosDoPeriodo += preencheLinha(opcao, jurosCompostos(quantia, inflacao / 100, projectionType / 12))
           }
 
 
@@ -468,6 +487,9 @@
                   lciDI,
                   lciFixo,
                   lciIPCA,
+
+                  tesouroIPCA,
+                  tesouroSemestral
                 ],
               },
               grid: {
@@ -494,7 +516,7 @@
                     {
                       value: valorInflacao,
                       text: "Inflação: " + valorInflacao,
-                      class: 'rafael'
+                      class: 'vermelho'
                     },
                   ]
                 }
@@ -513,6 +535,9 @@
               axis: {
                 x: {
                   show: false
+                },
+                y: {
+                  max: item.valorLiquido
                 }
               },
               bindto: `#meses_${projectionType}`,
@@ -531,20 +556,10 @@
 
       let html = "";
       const ordenadoPreco = _.sortBy(projecao, [function (o) {
-        return o.valorBruto * (1 - o.aliquotaIR)
+        return o.valorLiquido
       }])
       for (const item of ordenadoPreco) {
-        html += `
-  <tr>
-    <td>${item.indice}</td>
-    <td>${item.prazo} meses</td>
-    <td>${item.taxa}</td>
-    <td>${item.aliquotaIR}</td>
-    <td>${item.valorBruto}</td>
-    <td>${(item.valorBruto * item.aliquotaIR).toFixed(2)}</td>
-    <td>${(item.valorBruto * (1 - item.aliquotaIR)).toFixed(2)}</td>
-  </tr>
-  `
+        html += preencheLinha(item)
       }
       document.querySelector('#projecao').innerHTML = html
 
@@ -558,6 +573,19 @@
       var htmltable = document.getElementById('tabela-projecao');
       var html = htmltable.outerHTML;
       window.open('data:application/vnd.ms-excel,' + encodeURIComponent(html));
+    }
+
+    function preencheLinha(item, inflacao = 0) {
+      return `
+      <tr ${item.valorLiquido <= inflacao ? "style='color:red'" : ''}>
+        <td>${item.indice}</td>
+        <td>${item.prazo} meses</td>
+        <td>${item.taxa}</td>
+        <td>${item.aliquotaIR}</td>
+        <td>${item.valorBruto}</td>
+        <td>${item.valorIR}</td>
+        <td>${item.valorLiquido.toFixed(2)}</td>
+      </tr>`;
     }
   </script>
 </body>
