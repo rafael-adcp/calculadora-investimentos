@@ -43,12 +43,28 @@
 </head>
 
 <body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="http://www.tesouro.gov.br/-/tesouro-direto-indicadores" target="_blank">Indices Tesouro direto <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://www.b3.com.br/pt_br/" target="_blank">Indices DI</a>
+        </li>
+
+
+      </ul>
+    </div>
+  </nav>
   <br>
   <div class="container">
-    <!-- 
-      http://www.tesouro.gov.br/-/tesouro-direto-indicadores 
-      http://www.b3.com.br/pt_br/
-    -->
     <br />
     <h2>Aporte único a ser feito e por quantos meses calcular</h2>
     <div class="form-row">
@@ -82,7 +98,7 @@
       </div>
       <div class="form-group col-xl-6">
         <label>SELIC</label>
-        <input type="number" value="6.5" class="form-control" id="selic" oninput="realizaProjecao()">
+        <input type="number" value="8" class="form-control" id="selic" oninput="realizaProjecao()">
       </div>
     </div>
 
@@ -241,6 +257,9 @@
       document.querySelector('#graficos').innerHTML = "";
       let graficos = []
       var opcoes = [
+        /*
+            CDB
+        */
         {
           indice: "cdb {{taxa}}% do DI",
           max: 130,
@@ -255,6 +274,17 @@
           taxa: "{{taxa}}",
           ir: true
         },
+        {
+          indice: "cdb IPCA + {{taxa}}%",
+          max: 9,
+          min: 4,
+          taxa: "{{ipca}} + {{taxa}}",
+          ir: true
+        },
+
+        /*
+            LCI & LCA
+        */
         {
           indice: "lci_lca {{taxa}}% DI",
           max: 100,
@@ -318,7 +348,6 @@
           taxa: "{{taxa}}",
           ir: true
         }
-
       ]
 
       for (var investimento of opcoes) {
@@ -344,8 +373,8 @@
                 obj.valorBruto = investimento.indice.indexOf('tesouro 20') != -1 ? taxa : jurosCompostos(quantia, taxa.toFixed(3) / 100, irMeses / 12);
                 obj.aliquotaIR = investimento.ir ? (1 - getAliquotaImpostoRenda(irMeses)).toFixed(3) : "0";
 
-                obj.valorIR = (obj.valorBruto * obj.aliquotaIR).toFixed(2)
-                obj.valorLiquido = obj.valorBruto * (1 - obj.aliquotaIR);
+                obj.valorIR = ((obj.valorBruto - quantia) * obj.aliquotaIR).toFixed(2)
+                obj.valorLiquido = obj.valorBruto - obj.valorIR;
 
                 if (typeof obj.valorLiquido != "number") {
                   throw new Error('Formato errado, deveria ser numero')
@@ -415,8 +444,10 @@
 
           let cdbDI = ["cdb %DI"]
           let cdbFixo = ["cdb %"]
-          let lciDI = ["lci_lca %DI"]
+          let cdbIPCA = ["cdb IPCA"]
 
+
+          let lciDI = ["lci_lca %DI"]
           let lciFixo = ["lci_lca %"]
           let lciIPCA = ["lci_lca ipca + %"]
 
@@ -436,7 +467,11 @@
               opcao.indice.indexOf('DI') != -1) {
               cdbDI.push(valorArredondado)
 
-            } else if (opcao.indice.indexOf('cdb') != -1) {
+            } else if (opcao.indice.indexOf('cdb') != -1 &&
+              opcao.indice.indexOf('IPCA') != -1) {
+              cdbIPCA.push(valorArredondado)
+            }
+            else if (opcao.indice.indexOf('cdb') != -1) {
               cdbFixo.push(valorArredondado)
 
             } else if (opcao.indice.indexOf('lci_lca') != -1 &&
@@ -483,6 +518,7 @@
                 columns: [
                   cdbDI,
                   cdbFixo,
+                  cdbIPCA,
 
                   lciDI,
                   lciFixo,
