@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Calculadora</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+    integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+  <!-- loda D3.js-->
+  <script src="https://d3js.org/d3.v5.js"></script>
+  <!-- Load billboard.js with style -->
+  <script src="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/billboard.js/dist/billboard.css">
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+    integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+    integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+    crossorigin="anonymous"></script>
+
+  <!--Lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"
+    integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps=" crossorigin="anonymous"></script>
+
+  <!-- Moment Js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <style>
+    .bb-ygrid-line.vermelho line {
+      stroke: #DC3445;
+    }
+
+    .bb-ygrid-line.vermelho text {
+      fill: #DC3445;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://www.tesouro.gov.br/-/tesouro-direto-indicadores" target="_blank">Indices
+            Tesouro direto <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://www.b3.com.br/pt_br/" target="_blank">Indices DI</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="calculadora.html">Calculadora Juros Compostos</a>
+        </li>
+
+
+      </ul>
+    </div>
+  </nav>
+  <br>
+  <div class="container">
+    <br />
+    <h2>Calculadora Juros compostos</h2>
+    <hr />
+    <div class="form-row">
+      <div class="form-group col-xl-6">
+        <label>Valor inicial</label>
+        <input type="number" value="1000" class="form-control" id="valorInicial" oninput="realizaProjecao()">
+      </div>
+      <div class="form-group col-xl-6">
+        <label>Valor mensal</label>
+        <input type="number" value="2000" class="form-control" id="valorMensal" oninput="realizaProjecao()">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-xl-6">
+        <label>Taxa de juros ao mês</label>
+        <input type="number" value="0.5" class="form-control" id="taxa" oninput="realizaProjecao()">
+      </div>
+      <div class="form-group col-xl-6">
+        <label>Periodo em anos</label>
+        <input type="number" value="10" class="form-control" id="periodo" oninput="realizaProjecao()">
+      </div>
+    </div>
+
+
+    <h2>Resultado</h2>
+    <br />
+    <div class="row">
+
+      <table class="table">
+
+        <tbody>
+          <tr>
+            <td scope="row">Total aplicado</td>
+            <td id="totalAplicado"></td>
+          </tr>
+
+          <tr>
+            <td scope="row">Valor Futuro Bruto</td>
+            <td id="valorFuturoFinal"></td>
+          </tr>
+
+
+
+
+          <tr>
+            <td scope="row">Imposto</td>
+            <td id="imposto"></td>
+          </tr>
+
+          <tr>
+            <td scope="row">Total liquido</td>
+            <td id="totalLiquido"></td>
+          </tr>
+
+          <tr>
+            <td scope="row">Total rendimento bruto</td>
+            <td id="valorGanhoBruto"></td>
+          </tr>
+
+          <tr>
+            <td scope="row">Total rendimento liquido</td>
+            <td id="valorGanhoLiquido"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <script>
+    function currencyFormat(value) {
+      return `R$ ${new Intl.NumberFormat('pt-BR').format(value.toFixed(2))}`;
+    }
+    function getAliquotaImpostoRenda(meses) {
+      if (meses <= 6) {
+        return 1 - 0.225
+      } else if (meses > 6 && meses <= 12) {
+        return 1 - 0.20
+
+      } else if (meses > 12 && meses <= 24) {
+        return 1 - 0.175
+
+      } else if (meses >= 24) {
+        return 1 - 0.15
+      } else {
+        throw new Error('Error on getAliquotaImpostoRenda for' + meses)
+      }
+    }
+
+    function realizaProjecao() {
+
+      const valorInicial = document.querySelector('#valorInicial').value;
+      const valorMensal = document.querySelector('#valorMensal').value;
+
+      var taxa = document.querySelector('#taxa').value;
+      var periodo = document.querySelector('#periodo').value;
+
+      periodo = periodo * 12
+      taxa = taxa / 100;
+
+      var valorFuturo = (valorInicial * ((1 + taxa) ** periodo)) +
+        valorMensal * (
+          ((1 + taxa) ** periodo) - 1
+        ) / taxa;
+
+      const totalAplicado = (valorMensal * periodo) + parseFloat(valorInicial);
+
+      const valorGanhoBruto = valorFuturo - totalAplicado;
+
+      const imposto = getAliquotaImpostoRenda(periodo);
+      const valorGanhoLiquido = valorGanhoBruto * imposto;
+
+      document.getElementById('valorGanhoBruto').innerText = currencyFormat(valorGanhoBruto)
+      document.getElementById('valorGanhoLiquido').innerText = currencyFormat(valorGanhoLiquido)
+      document.getElementById('imposto').innerText = `${(1 - imposto).toFixed(2)}% <-> ${currencyFormat((1 - imposto) * valorGanhoBruto)} `
+
+      document.getElementById('valorFuturoFinal').innerText = currencyFormat(valorFuturo)
+      document.getElementById('totalAplicado').innerText = currencyFormat(totalAplicado)
+
+      document.getElementById('totalLiquido').innerText = currencyFormat(totalAplicado + valorGanhoLiquido)
+
+
+
+
+
+
+    }
+  </script>
+</body>
+
+</html>
