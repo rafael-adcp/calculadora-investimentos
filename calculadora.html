@@ -35,15 +35,6 @@
 
   <!-- Moment Js-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
-  <style>
-    .bb-ygrid-line.vermelho line {
-      stroke: #DC3445;
-    }
-
-    .bb-ygrid-line.vermelho text {
-      fill: #DC3445;
-    }
-  </style>
 </head>
 
 <body>
@@ -74,9 +65,7 @@
       </ul>
     </div>
   </nav>
-  <br>
   <div class="container">
-    <br />
     <h2>Calculadora Juros compostos</h2>
     <hr />
     <div class="form-row">
@@ -110,26 +99,23 @@
 
         <tbody>
           <tr>
+            <td scope="row">Total liquido</td>
+            <td id="totalLiquido"></td>
+          </tr>
+
+          <tr>
             <td scope="row">Total aplicado</td>
             <td id="totalAplicado"></td>
           </tr>
 
           <tr>
+            <td scope="row">Total rendimento liquido</td>
+            <td id="valorGanhoLiquido"></td>
+          </tr>
+
+          <tr>
             <td scope="row">Valor Futuro Bruto</td>
             <td id="valorFuturoFinal"></td>
-          </tr>
-
-
-
-
-          <tr>
-            <td scope="row">Imposto</td>
-            <td id="imposto"></td>
-          </tr>
-
-          <tr>
-            <td scope="row">Total liquido</td>
-            <td id="totalLiquido"></td>
           </tr>
 
           <tr>
@@ -138,8 +124,8 @@
           </tr>
 
           <tr>
-            <td scope="row">Total rendimento liquido</td>
-            <td id="valorGanhoLiquido"></td>
+            <td scope="row">Imposto</td>
+            <td id="imposto"></td>
           </tr>
         </tbody>
       </table>
